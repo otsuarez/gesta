@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Dominios | Eliminando Dominio{% endblock %}
+{% block content %}
+
+{% if message %}
+  <b>{{ message }}</ b> <p />
+{% endif %}
+
+<h2>Eliminando dominio</h2>
+<form id="formUserData" name="formUserData" action="/dns/zone/del/{{ zid }}/" method="post" accept-charset="utf-8">
+<tr>
+Esta seguro?
+<td id="tdSubmit" colspan="2">
+<input type="submit" value=" Eliminar " />
+</td>
+</tr>
+</table>
+</form>
+{% endblock %}

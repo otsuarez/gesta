@@ -1,0 +1,41 @@
+<html>
+<head>
+  <title>Dominios</title>
+</head>
+ 
+<body>
+{% if message %}
+  <b>{{ message }}</ b>
+  <p />
+{% endif %}
+ 
+{% if zones_list %}
+<table>
+  {% for zone in zone_list %}
+  <tr bgcolor='{% cycle FFFFFF,EEEEEE as rowcolor %}'>
+    <td>{{ zone.name }}</td>
+    <td><a href='{{ request.path }}/edit/{{ zone.id }}/'>Edit</a></td>
+    <td><a href='{{ request.path }}/del/{{ zone.id }}/'>Delete</a></td>
+  </tr>
+  {% endfor %}
+</table>
+<p />
+{% endif %}
+ 
+<form action='{{ request.path }}' method='POST'>
+<input type='hidden' name='action' value='{{ action }}'>
+<table>
+{{ form }}
+<tr>
+  <td colspan=2 align=right>
+    <input type=submit name='submit_action' value='{{ submit_action }}'>
+  </td>
+</tr>
+</table>
+</form>
+ 
+{% ifnotequal submit_action 'Add' %}
+  <p />
+  <a href='{{ request.path }}'>Add New Contact</a>
+{% endifnotequal %}
+</html>

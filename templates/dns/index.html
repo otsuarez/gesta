@@ -1,0 +1,429 @@
+<html><head><title>
+Administracion de DNS
+</title>
+
+<script type="text/javascript">
+
+function validateIP(what) {
+    if (what.search(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) != -1) {
+        var myArray = what.split(/\./);
+        if (myArray[0] > 255 || myArray[1] > 255 || myArray[2] > 255 || myArray[3] > 255)
+            return false;
+        if (myArray[0] == 0 && myArray[1] == 0 && myArray[2] == 0 && myArray[3] == 0)
+            return false;
+        return true;
+    }
+    else
+        return false;
+}
+
+
+function validate_record_a(form)
+{
+    valid = true;
+    /*
+    */
+    if ( form.name.value == "" )
+    {
+    	form.name.value = ".";
+    }
+    if ( !validateIP(form.value.value) )
+    {
+        alert ( "La direcion IP tiene errores." );      
+        valid = false;
+    } 
+    return valid;
+}
+/* --------------------------------- */
+var recordtypes = new Array("A","CNAME","MX","TXT","NS");
+
+function show_RRForm(este){
+    div_status = "record_STATUS";
+    var statusblock = document.getElementById(div_status);
+    statusblock.style.display = "none"; 
+    hide_RRForms();
+    ajuste = este.selectedIndex;
+    registro = este.options[ajuste].text;
+    div_name = "record_"+registro; 
+    var block = document.getElementById(div_name);
+    block.style.display = "block";
+    if (registro == "A"){
+    	document.addRecord.autocomplete = "1";
+    }
+}
+
+function hide_RRForms()
+{
+  for (i=0; i < recordtypes.length; i++)
+  {
+    div_name = "record_"+recordtypes[i];
+	var block = document.getElementById(div_name);
+    block.style.display = "none";
+  }  
+}
+</script>
+<style type="text/css">
+.highlight {font-weight: bold}
+
+div.row {
+  clear: both;
+  padding-top: 10px;
+  }
+
+div.row span.label {
+  float: left;
+  width: 250px;
+  text-align: right;
+  }
+
+div.row span.formw {
+  //float: right;
+  width: 385px;
+  text-align: left;
+  } 
+table.tr.td div.row{
+  clear: both;
+  padding-top: 10px;
+  }
+    
+</style>
+</head>
+<body>
+<h2>Administracion de DNS</h2><p>
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+<tr> <td>
+<table align='center' border='0' width='100%' bordercolor='black' border-style='solid' border-width='2px' border='2' cellspacing="3" cellpadding="2" bgcolor="#ABCDEF">
+<tr align="center">
+<td> <a href="/dns/">Inicio</a> </td>
+
+<td> <a href="/dns/logout/">Logout</a> 
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+{% if message %}
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+<tr> <td>
+<table align='center' border='0' width='100%' bordercolor='black' border-style='solid' border-width='2px' border='2' cellspacing="3" cellpadding="2" bgcolor="#ABCDEF">
+<tr align="center">
+<td>
+  <b>{{ message }}</b>
+    <br />
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+{% endif %}
+
+<table width="95%" border="0" cellspacing="0" cellpadding="4" align="center">
+<tr>  
+    <td width="25%" valign="top">
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="left">
+          <tr><td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="8" bgcolor="#FFFFFF" height="100%">
+		<tr height="100%"><td bgcolor="#FFFFFF" valign="top">
+			{% if zones_list %}
+			Zonas:
+				<table width="100%" border="0" cellspacing="0" cellpadding="1" >
+			<ol>
+			{% for zone in zones_list %}
+			<tr>
+				<td><a href="/dns/zone/list/{{zone.id}}/"><li>{{zone.name}}</li> </a></td>
+				<td><a href="/dns/zone/del/{{ zone.id }}/">[X]</a></td>
+				</tr>
+			{% endfor %}
+			</ol>
+			<tr><td><br /> <a href="/dns/zone/add/">Crear nueva zona</a> </td></tr>
+			</table>
+			{% else %}
+			<p>No existen zonas creadas aun.</p>
+			{% endif %}
+		</td></tr>
+		</table>
+          </td></tr>
+	</table>
+    </td>
+
+<!-- =================================  tabla de los records =======================================  -->
+
+   <td width="75%" valign="top">
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+	<tr><td>
+	<table width="100%" border="0" cellspacing="0" cellpadding="8" bgcolor="#FFFFFF" height="100%">
+	<tr><td>
+		{% if zone %}
+		<b>Esta editando: {{zone.name}}</b><br /><br />
+
+		<table width="100%" border="0" cellspacing="0" cellpadding="1" >
+		{% if record_list %}				
+			<b>Registros</b>
+			<tr><td>
+			<table width="90%" border="1" cellspacing="0" cellpadding="1">
+				<tr>
+				<td><div align="center"><B>Registro</B></div></td>
+				<td><div align="center"><B>Tipo</B></div></td>
+				<td><div align="center"><B>Valor</B></div></td>
+				<td><div align="center"><B>MX</B></div></td>
+				<td><div align="center"><B>TTL</B></div></td>
+				<td><div align="center"><B>Eliminar</B></div></td>
+				</tr>
+				{% for record in record_list %}
+				<tr>
+				<td><div align="center">
+				{% ifequal record.name "." %}
+					{{zone.name}}
+		   		{% else %}
+					{% ifequal record.type.name "CNAME" %}
+						{{record.name}}.{{zone.name}}
+		   			{% else %}
+						{% ifequal record.type.name  "A" %}
+							{{record.name}}.{{zone.name}}
+		   				{% else %}
+							{{zone.name}}
+		   				{% endifequal %}
+		   			{% endifequal %}
+		   		{% endifequal %}
+				</div></td>
+				<td><div align="center">{{record.type}}</div></td>
+				{% ifequal record.type.name "CNAME" %}
+					<td><div align="center">{{record.value}}</div></td>
+		   		{% else %}
+					{% ifequal record.type.name  "TXT" %}
+						<td><div align="center">"{{record.value}}"</div></td>
+		   			{% else %}
+					<td><div align="center">{{record.value}}</div></td>
+		   			{% endifequal %}
+		   		{% endifequal %}
+				<td><div align="center">{{record.preference}}&nbsp;</div></td>
+				<td><div align="center">{{record.ttl}}</div></td>
+				<td width="80"><div align="center">[<a href="/dns/rr/del/{{record.id}}/">delete</a>]</div></td> 
+				</tr> 
+				{% endfor %}
+			</table><BR>
+			<!-- Fin Edicion Registros -->
+
+		</td></tr>
+		{% else %}
+		   {% if zone_add %}
+		   	<tr><td>Adicionando una zona ... .  </td></tr>
+		   {% else %}
+		   	<tr><td>Esta zona no contiene registros aun.</td></tr>
+		   {% endif %}
+		{% endif %}
+		</table>
+<!-- =============================  Add a Record   =============================================== -->
+<table width="90%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="left">
+  <tr><td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="#FFFFFF">
+	<tr>
+	<td><b>Adicionar un nuevo registro:</b></td>
+	</tr>
+	<tr>
+	<td>
+        <form name="addRecord" method="post" action="/dns/zone/{{zone.id}}/rr/add/">
+        <input type="hidden" name="zone" value="{{zone.id}}">
+        <input type="hidden" name="ttl" value="1">
+        <input type="hidden" name="autocomplete" value="0">
+	<label for="id_type">Tipo de Registro:</label></td>
+	<td><font size="2">
+			<select name="type" id="id_type" onChange="show_RRForm(this);">
+			<option value="">Tipo de Registro:</option>
+			<option value="1">A</option>
+		{% if record_list %}				
+			<option value="6">CNAME</option>
+			<option value="7">MX</option>
+		{% endif %}
+			<option value="2">NS</option>
+			<option value="5">TXT</option>
+			</select>  
+			</font></td>
+                 </form>
+	</tr>
+<!--	---------------------------------- status ------------------------------------------ -->
+		<tr><td>
+		<div id="record_STATUS" style="width: 90%; background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; ">
+		<span class="label"><b>Seleccione el tipo de registro a crear</b></span>
+		<div></td></tr>
+<!--	---------------------------------- registro NS ------------------------------------------ -->
+		<tr><td>
+		<div id="record_NS" style="width: 90%;	 background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; display: none;">
+        	<form name="addRecordNS" method="post" action="/dns/zone/{{zone.id}}/rr/add/">
+        	<input type="hidden" name="zone" value="{{zone.id}}">
+        	<input type="hidden" name="type" value="2">
+        	<input type="hidden" name="ttl" value="1">
+		<div class="row">
+			<span class="label"><label for="id_name">Dominio:</label></span>
+			<span class="formw"><input  id="id_name" type="text" value="{{zone.name}}" name="name" maxlength="65"  ></span>
+		</div>
+		<div class="row">
+			<span class="label">Servidor:</span>
+			<span class="formw"><input  type="text" name="value" maxlength="65" ></span>
+		</div>
+		<div class="spacer">
+		&nbsp;
+		</div>
+		<input type="submit" name="Submit" value="Crear Registro">
+                 </form>
+		</div>
+		</td></tr>
+<!--	---------------------------------- registro MX ------------------------------------------ -->
+		<tr><td>
+		<div id="record_MX" style="width: 90%; background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; display: none;">
+        	<form name="addRecordMX" method="post" action="/dns/zone/{{zone.id}}/rr/add/">
+        	<input type="hidden" name="zone" value="{{zone.id}}">
+        	<input type="hidden" name="type" value="7">
+        	<input type="hidden" name="ttl" value="1">
+		<div class="row">
+			<span class="label"><label for="id_name">Dominio:</label></span>
+			<span class="formw"><input  id="id_name" type="text" value="{{zone.name}}" name="name" maxlength="65"  ></span>
+		</div>
+		<div class="row">
+			<span class="label">Servidor:</span>
+		   {% if not record_list %}
+			<span class="formw"><select name="value" >
+			{% for record in record_list %}
+				<option value="{{record.id}}">{{record.name}}</option>
+			{% endfor %}
+			</select></span>
+		   {% else %}
+			<span class="formw"><input  type="text" name="value" maxlength="65" ></span>
+		   {% endif %}
+		</div>
+		<div class="row">
+			<span class="label">Preferencia:</span>
+			<span class="formw"><input type="text" name="preference" size="4" maxlength="2"></span>
+		</div>
+		<div class="spacer">
+		&nbsp;
+		</div> 
+		<input type="submit" name="Submit" value="Crear Registro">
+                 </form>
+		</div>
+		</td></tr>
+<!--	---------------------------------- registro A ------------------------------------------ -->
+		<tr><td>
+		<div id="record_A" style="width: 90%; background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; display: none;">
+        	<form name="addRecordA" method="post" action="/dns/zone/{{zone.id}}/rr/add/"  onsubmit="return validate_record_a(this);">
+        	<input type="hidden" name="zone" value="{{zone.id}}">
+        	<input type="hidden" name="type" value="1">
+        	<input type="hidden" name="ttl" value="1">
+		<div class="row">
+			<span class="label"><label for="id_name">Nombre del host:</label></span>
+			<span class="formw"><input  id="id_name" type="text" name="name" maxlength="65"  >.{{zone.name}}</span>
+		</div>
+		<div class="row">
+			<span class="label">Direcci&oacute;n IP:</span>
+			<span class="formw"><input  type="text" name="value" maxlength="15" ></span>
+		</div>
+		<div class="spacer">
+		&nbsp;
+		</div>
+		<input type="submit" name="SubmitA" value="Crear Registro A">
+                 </form>
+		</div>
+		</td></tr>
+<!--	---------------------------------- registro CNAME ------------------------------------------ -->
+		<tr><td>
+		<div id="record_CNAME" style="width: 90%; background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; display: none;">
+        	<form name="addRecordCNAME" method="post" action="/dns/zone/{{zone.id}}/rr/add/">
+        	<input type="hidden" name="zone" value="{{zone.id}}">
+        	<input type="hidden" name="type" value="6">
+        	<input type="hidden" name="ttl" value="1">
+		<div class="row">
+			<span class="label"><label for="id_name">Nombre del host:</label></span>
+			<span class="formw"><input  id="id_name" type="text" name="name" maxlength="65"  >.{{zone.name}}</span>
+		</div>
+		<div class="row">
+			<span class="label">Valor del registro:</span>
+			<span class="formw"><input  type="text"  value=".{{zone.name}}" name="value" maxlength="65" ></span>
+		</div>
+		<div class="spacer">
+		&nbsp;
+		</div>
+		<input type="submit" name="Submit" value="Crear CNAME"> 
+		</form> 
+		</div> 
+		</td></tr>
+<!--	---------------------------------- registro TXT ------------------------------------------ -->
+		<tr><td>
+		<div id="record_TXT" style="width: 90%;	 background-color: #cc9;border: 1px dotted #333; padding: 5px;margin: 0px auto; display: none;">
+        	<form name="addRecordTXT" method="post" action="/dns/zone/{{zone.id}}/rr/add/">
+        	<input type="hidden" name="zone" value="{{zone.id}}">
+        	<input type="hidden" name="type" value="5">
+        	<input type="hidden" name="ttl" value="1">
+        	<input type="hidden" name="name" value="{{zone.name}}">
+		<div class="row">
+			<span class="label"><label for="id_name">Registro:</label></span>
+			<span class="formw"><input  id="id_name" type="text"  value="{{zone.name}}" name="nameshow" maxlength="65" disabled="disabled" ></span>
+		</div>
+		<div class="row">
+			<span class="label">Contenido:</span>
+			<span class="formw"><input  type="text" name="value" maxlength="65" ></span>
+		</div>
+		<div class="spacer">
+		&nbsp;
+		</div>
+		<input type="submit" name="Submit" value="Crear Registro">
+                 </form>
+		</div>
+		</td>
+                 </tr>
+		</td></tr>
+<!--	---------------------------------- fin de los registros ------------------------------------------ -->
+
+     </table>
+</td></tr></table>  
+<!-- =============================  End  - Add a Record   =============================================== -->
+
+	{% else %}
+                   {% if zone_add %}
+                        <tr><td>Adicionando un dominio</td></tr><tr><td>
+			<form id="formZoneData" name="formZoneData" action="/dns/zone/add/" method="post" accept-charset="utf-8">
+			<table id="ZoneForm">
+			<tr><th><label for="id_name">Nombre:</label></th><td><input id="id_name" type="text" name="name" maxlength="240" /></td></tr>
+			<tr>
+			<td id="tdSubmit" colspan="2"> <input type="submit" value=" Guardar " /> </td></tr>
+                   {% else %} 
+                   	{% if zone_del %}
+                       	 	<tr><td>Eliminando un dominio</td></tr>
+				<tr><td>
+				<form id="formUserData" name="formUserData" action="/dns/zone/del/{{ zid }}/" method="post" accept-charset="utf-8">
+			 	Esta seguro de eliminar el dominio:<b> {{ zname }}</b> ?  <td id="tdSubmit" colspan="2">
+				</td></tr> <tr><td>
+				<input type="submit" value=" Eliminar " />
+				</td></tr><tr><td>
+                   	{% else %}
+                   		{% if record_del %}
+				<tr><td>Eliminando un registro</td></tr>
+				<tr><td>
+				<form id="formUserData" name="formUserData" action="/dns/rr/del/{{ rid }}/" method="post" accept-charset="utf-8">
+				Va a eliminar el registro <b>{{ rr.name }}</b> (tipo {{ rr.type.name }}) del dominio <b>{{rr.zone.name}}</b>.<br>
+				<br />
+				<b>Esta seguro</b>?
+				</td> </tr>
+				<tr><td id="tdSubmit" colspan="2">
+				<input type="submit" value=" Eliminar Registro " />
+				</td> </tr>
+				<tr><tr>
+                   		{% else %}
+				<p>Seleccione un Dominio</p>
+                   		{% endif %}
+                   	{% endif %}
+		   {% endif %}
+
+	{% endif %}
+			</td> </tr>
+		</table>
+		</td> </tr>
+	</table>
+	</td></tr>
+</table>
+</body>
+</html>

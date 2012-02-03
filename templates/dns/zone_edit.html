@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Zonas | Editar zona{% endblock %}
+{% block content %}
+<h2>Editando zona</h2>
+<form id="formUserData" name="formUserData" action="/dns/zone/edit/{{ zid }}/" method="post" accept-charset="utf-8">
+<table id="userForm">
+{{ form }}
+<tr>
+<td id="tdSubmit" colspan="2">
+<input type="submit" value=" Guardar " />
+</td>
+</tr>
+</table>
+</form>
+{% endblock %}

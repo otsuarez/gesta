@@ -1,0 +1,9 @@
+from django import newforms as forms
+# old syntax
+#from django.newforms import form_for_model
+# new syntax
+from django.newforms import ModelForm
+from django.db import models 
+from models import Zone
+
+ZoneForm = form_for_model(Zone)

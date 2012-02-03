@@ -1,0 +1,57 @@
+<html>
+<head><title>probando validaciones</title>
+<script type="text/javascript">
+<!--
+function validateIP(what) {
+    if (what.search(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) != -1) {
+        var myArray = what.split(/\./);
+        if (myArray[0] > 255 || myArray[1] > 255 || myArray[2] > 255 || myArray[3] > 255)
+            return false;
+        if (myArray[0] == 0 && myArray[1] == 0 && myArray[2] == 0 && myArray[3] == 0)
+            return false;
+        return true;
+    }
+    else
+        return false;
+}
+
+
+function validate_form (form)
+{
+    valid = true;
+    if ( form.name.value == "" )
+    {
+        alert ( "Please fill in the 'Registro' box." );
+        valid = false;
+    }
+    if ( !validateIP(form.ip.value) )
+    {
+        alert ( "Please fill with and ip number the 'IP' box." );      
+        valid = false;
+    } 
+    return valid;
+}
+//-->
+</script>
+
+
+</head>
+<body>
+<form name="contact_form" method="post"
+action="http://localhost/"
+onsubmit="return validate_form(this);">
+
+<h1>Please Enter Your Name</h1>
+
+<p>Registro: <input type="text" name="name"></p>
+<p>ip: <input type="text" name="ip"></p>
+<p><input type="submit" name="send" value="Send Details"></p>
+
+
+</form>
+
+<hr>
+onsubmit="return"
+
+</body>
+</html>

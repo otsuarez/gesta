@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Registrso | Nuevo registro{% endblock %}
+{% block content %}
+<h2>Nuevo registro</h2>
+<form id="formUserData" name="formUserData" action="/dns/rr/{{zid}}/add/" method="post" accept-charset="utf-8">
+<table id="userForm">
+{{ form }}
+<tr>
+<td id="tdSubmit" colspan="2">
+<input type="submit" value=" Guardar " />
+</td>
+</tr>
+</table>
+</form>
+{% endblock %}
