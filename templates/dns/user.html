@@ -1,0 +1,258 @@
+<html><head><title>
+Administracion de DNS
+</title>
+<script src="/media/ajax.js" language="JavaScript"></script>
+<style type="text/css">
+<!--
+#header {
+  background: #0f0;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 800px;
+  height: 100px;
+}
+#leftcol {
+  #background: #f00;
+  position: absolute;
+  top: 0px;
+  #top: 100px;
+left: 100px;
+  width: 150px;
+  height: 10px;
+}
+#rightcol {
+  #background: #f00;
+  position: absolute;
+  top: 0px;
+  #top: 100px;
+left: 650px;
+  width: 150px;
+  height: 10px;
+}
+#content {
+  background: #fff;
+  position: absolute;
+  top: 100px;
+left: 150px;
+  width: 500px;
+  height: 500px;
+}
+#footer {
+  background: #0f0;
+  position: absolute;
+  top: 500px;
+  left: 0px;
+  width: 800px;
+  height: 100px;
+}
+-->
+</style>
+
+<script type="text/javascript">
+
+function validateIP(what) {
+    if (what.search(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) != -1) {
+        var myArray = what.split(/\./);
+        if (myArray[0] > 255 || myArray[1] > 255 || myArray[2] > 255 || myArray[3] > 255)
+            return false;
+        if (myArray[0] == 0 && myArray[1] == 0 && myArray[2] == 0 && myArray[3] == 0)
+            return false;
+        return true;
+    }
+    else
+        return false;
+}
+
+
+function validate_record_a(form)
+{
+    valid = true;
+    /*
+    */
+    if ( form.name.value == "" )
+    {
+    	form.name.value = ".";
+    }
+    if ( !validateIP(form.value.value) )
+    {
+        alert ( "La direcion IP tiene errores." );      
+        valid = false;
+    } 
+    return valid;
+}
+/* --------------------------------- */
+var recordtypes = new Array("A","CNAME","MX","TXT","NS");
+
+function show_RRForm(este){
+    div_status = "record_STATUS";
+    var statusblock = document.getElementById(div_status);
+    statusblock.style.display = "none"; 
+    hide_RRForms();
+    ajuste = este.selectedIndex;
+    registro = este.options[ajuste].text;
+    div_name = "record_"+registro; 
+    var block = document.getElementById(div_name);
+    block.style.display = "block";
+    if (registro == "A"){
+    	document.addRecord.autocomplete = "1";
+    }
+}
+
+function hide_RRForms()
+{
+  for (i=0; i < recordtypes.length; i++)
+  {
+    div_name = "record_"+recordtypes[i];
+	var block = document.getElementById(div_name);
+    block.style.display = "none";
+  }  
+}
+</script>
+<style type="text/css">
+.highlight {font-weight: bold}
+
+div.row {
+  clear: both;
+  padding-top: 10px;
+  }
+
+div.row span.label {
+  float: left;
+  width: 250px;
+  text-align: right;
+  }
+
+div.row span.formw {
+  //float: right;
+  width: 385px;
+  text-align: left;
+  } 
+table.tr.td div.row{
+  clear: both;
+  padding-top: 10px;
+  }
+    
+</style>
+</head>
+<body>
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+<tr> <td>
+<table align='center' border='0' width='100%' bordercolor='black' border-style='solid' border-width='2px' border='2' cellspacing="3" cellpadding="2" bgcolor="#ABCDEF">
+<tr align="center">
+<td> <a href="/dns/">Inicio</a> </td>
+<td> <a href="/dns/user/edit/{{ user.id }}/"> Mi Perfil</a>  </td>
+<td> <a href="/dns/logout/">Logout</a> 
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+{% if message %}
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+<tr> <td>
+<table align='center' border='0' width='100%' bordercolor='black' border-style='solid' border-width='2px' border='2' cellspacing="3" cellpadding="2" bgcolor="#ABCDEF">
+<tr align="center">
+<td>
+  <b>{{ message }}</b>
+    <br />
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+{% endif %}
+
+<table width="95%" border="0" cellspacing="0" cellpadding="4" align="center">
+<tr>  
+    <td width="25%" valign="top">
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="left">
+          <tr><td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="8" bgcolor="#FFFFFF" height="100%">
+		<tr height="100%"><td bgcolor="#FFFFFF" valign="top">
+			{% if user %}
+			<h2>{{user.username}}</h2>
+				<table width="100%" border="0" cellspacing="0" cellpadding="1" >
+			<tr>
+				<td><li><a href="/dns/user/status/{{user.id}}/">Mis Servicios</a> </li></td>
+			</tr><tr>
+				<td><li><a href="/dns/user/edit/{{ user.id }}/">Mis Datos</a></li></td>
+			</tr><tr>
+				<td><li><a href="/dns/user/pass/{{ user.id }}/">Cambiar Contrase&ntilde;a</a></li></td>
+			</tr><tr>
+				<td><li><a href="/dns/logout/">Cerrar sesi&oacute;n</a></li></td>
+				</tr>
+			</table>
+			{% else %}
+			<h2>{{user.username}}</h2>
+			<p>No existen zonas creadas aun.</p>
+			<a href="/dns/zone/add/">Crear nueva zona</a> 
+			{% endif %}
+		</td></tr>
+		</table>
+          </td></tr>
+	</table>
+    </td>
+
+<!-- =================================  tabla de los records =======================================  -->
+
+   <td width="75%" valign="top">
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="#000000" align="center">
+	<tr><td>
+	<table width="100%" border="0" cellspacing="0" cellpadding="8" bgcolor="#FFFFFF" height="100%">
+	<tr><td>
+		{% ifequal user_action "edit" %}
+			{# #######  	Begin User Edit   	######## #}
+		<b>Esta editando: {{user.username}}</b><br /><br />
+
+			<tr><td>
+			<table border="1" cellspacing="0" cellpadding="1">
+			<form name="user_edit"  method="post" action="/dns/user/edit/{{user.id}}/">
+				{{ form }}
+			<tr><td>
+				<input type="submit" name="Submit" value="Enviar">
+			</td></tr>
+			</form>
+			</table><BR>
+
+		</td></tr>
+			{# #######  	End User Edit   	######## #}
+			{{ user_action }}
+		{% else %}
+			{% ifequal user_action "pass" %}
+			<tr><td>Cambiar Contrase&ntilde;a:
+			<table border="1" cellspacing="0" cellpadding="1">
+			<form name="user_pass"  method="post" action="/dns/user/pass/{{user.id}}/">
+			<tr><td>
+			{#	{{ form }} #}
+			<div class="form-row">
+			<label for="id_password1" class="required">Actual:</label> <input type="password" id="id_password1" class="vPasswordField required" name="oldpass" size="30" value="" maxlength="60" />
+			</div>
+			<div class="form-row">
+			<label for="id_password2" class="required">Nueva:</label> <input type="password" id="id_password2" class="vPasswordField required" name="newpass" size="30" value="" maxlength="60" />
+			</div>
+				</td></tr>
+			<tr><td>
+				<input type="submit" name="Submit" value="Enviar">
+				</td></tr>
+				</form>
+			</table><BR>
+			{% else %}
+			{{ user_action }}
+		   		<tr><td>Tiene configuradas {{zone_total}} zonas en nuestro servicio.</td></tr>
+			{% endifequal %}
+		{% endifequal %}
+		</table>
+			</td> </tr>
+		</table>
+		</td> </tr>
+	</table>
+	</td></tr>
+</table>
+</body>
+</html>

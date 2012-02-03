@@ -1,25 +1,42 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('',
-     (r'^dns/$', 'gesta.dnsadmin.views.index'),
+urlpatterns = patterns('gesta.dnsadmin.views',
+     (r'^$', 'index'),
 # ----------------------------------------------------------------------------- #
 #	zone stuff
 # ----------------------------------------------------------------------------- #
-     (r'^dns/zone/add/$', 'gesta.dnsadmin.views.zone_add'),
-     (r'^dns/zone/del/(?P<zid>\d+)/$', 'gesta.dnsadmin.views.zone_del'),
-     (r'^dns/zone/edit/(?P<zid>\d+)/$', 'gesta.dnsadmin.views.zone_edit'),     
+     (r'^zone/add/$', 'zone_add'),
+     (r'^zone/del/(?P<zid>\d+)/$', 'zone_del'),
+     (r'^zone/edit/(?P<zid>\d+)/$', 'zone_edit'),     
 # ----------------------------------------------------------------------------- #
 #	records stuff
 # ----------------------------------------------------------------------------- #
-     (r'^dns/zone/(?P<zid>\d+)/rr/add/$', 'gesta.dnsadmin.views.record_add'),
-     (r'^dns/zone/list/(?P<zid>\d+)/$', 'gesta.dnsadmin.views.zone_list'),     
-     (r'^dns/rr/del/(?P<id>\d+)/$', 'gesta.dnsadmin.views.record_del'),
+     (r'^zone/(?P<zid>\d+)/rr/add/$', 'record_add'),
+     (r'^zone/list/(?P<zid>\d+)/$', 'zone_list'),     
+     (r'^rr/del/(?P<id>\d+)/$', 'record_del'),
 # ----------------------------------------------------------------------------- #
-     (r'^dns/logout', 'gesta.dnsadmin.views.logout_view'),
-     (r'^logout', 'gesta.dnsadmin.views.logout_view'),
-     (r'^dns/accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-     (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-    # Uncomment this for admin:
+#	ttl stuff
+# ----------------------------------------------------------------------------- #
+     (r'^ttl/(?P<rid>\d+)/(?P<ttlid>\d+)/$', 'ttl_update'),
+# ----------------------------------------------------------------------------- #
+#	files stuff
+# ----------------------------------------------------------------------------- #
+     (r'^file/zone/(?P<zid>\d+)/$', 'file_zone'),
+     (r'^zone/file/(?P<zid>\d+)/$', 'file_zone'),
+# ----------------------------------------------------------------------------- #
+#	user stuff
+# ----------------------------------------------------------------------------- #
+     (r'^user/edit/(?P<uid>\d+)/$', 'user_edit'),
+     (r'^user/pass/(?P<uid>\d+)/$', 'user_pass'),
+     (r'^user/status/(?P<uid>\d+)/$', 'user_status'),
+# ----------------------------------------------------------------------------- #
+#	extra stuff
+# ----------------------------------------------------------------------------- #
+     (r'^view/settings/$', 'view_settings'),
+# ----------------------------------------------------------------------------- #
+#	admin stuff
+# ----------------------------------------------------------------------------- #
+     (r'^logout/$', 'logout_view'),
+     (r'^logout', 'logout_view'),
      (r'^admin/', include('django.contrib.admin.urls')),
-     (r'^dns/admin/', include('django.contrib.admin.urls')),
 )

@@ -12,3 +12,4 @@ insert into dnsadmin_recordtype (name,description) values ('HINFO','System Infor
 insert into dnsadmin_recordtype (name,description) values ('KEY','DNSSEC Public Key Record');
 insert into dnsadmin_recordtype (name,description) values ('NXT','DNSSEC Content Record');
 insert into dnsadmin_recordtype (name,description) values ('SIG','DNSSEC Signature Record');
+insert into dnsadmin_recordtype (name,description) values ('URL','URL Redirect');

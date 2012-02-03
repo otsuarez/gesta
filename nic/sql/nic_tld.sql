@@ -1,0 +1,13 @@
+insert into nic_tld (tld) value ('com');
+insert into nic_tld (tld) value ('net');
+insert into nic_tld (tld) value ('org');
+insert into nic_tld (tld) value ('info');
+insert into nic_tld (tld) value ('biz');
+insert into nic_tld (tld) value ('ws');
+insert into nic_tld (tld) value ('eu');
+insert into nic_tld (tld) value ('mobi');
+insert into nic_tld (tld) value ('be');
+insert into nic_tld (tld) value ('es');
+insert into nic_tld (tld) value ('com.es');
+insert into nic_tld (tld) value ('nom.es');
+insert into nic_tld (tld) value ('org.es');

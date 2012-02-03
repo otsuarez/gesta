@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>something in the air...</title>
+</head>
+<body>
+{% if checkdnsform %}
+
+<form action="/nic/check/" method="POST">
+{{ checkdnsform.as_p }}
+<input type="submit" value="Submit" />
+</form>
+{% endif %}
+<br />
+---
+<br />
+{% if msg %}
+hay un mensaje ...... buscalo!<p>
+
+{{ msg }}<br />
+disponibilidad: {{ disponibilidad }}
+{% endif %}
+{{ msg }}<br />
+disponibilidad: {{ disponibilidad }}
+<p>fin.
+</body>
+</html>

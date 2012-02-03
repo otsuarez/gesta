@@ -1,12 +1,14 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/login.css{% endblock %}
+{% block bodyclass %}login{% endblock %}
 
-{% block breadcrumbs %}<div class="breadcrumbs"><a href="../">{% trans 'Home' %}</a></div>{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="../">{% trans 'Inicio' %}</a></div>{% endblock %}
 
 {% block content %}
-DNS Admin
-<p>{% trans "Thanks for spending some quality time with the Web site today." %}</p>
+DNS Admin. 
+<p>{% trans "Muchas gracias por su visita." %}</p>
 
-<p><a href="../">{% trans 'Log in again' %}</a></p>
+<p><a href="../">{% trans 'Iniciar sesion nuevamente ' %}</a></p>
 
 {% endblock %}
